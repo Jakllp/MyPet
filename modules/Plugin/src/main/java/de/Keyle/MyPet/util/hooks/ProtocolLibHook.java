@@ -53,7 +53,7 @@ public class ProtocolLibHook implements PluginHook {
     @Override
     public boolean onEnable() {
         try {
-        	if(MyPetApi.getCompatUtil().compareWithMinecraftVersion("1.17") <= 0) {
+        	if(MyPetApi.getCompatUtil().compareWithMinecraftVersion("1.17") < 0) {
         		//Don't enable this in 1.17+ bc of crashes/errors
         		registerEnderDragonInteractionFix();
         	}
