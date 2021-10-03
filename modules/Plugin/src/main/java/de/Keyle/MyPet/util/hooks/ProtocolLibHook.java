@@ -153,7 +153,7 @@ public class ProtocolLibHook implements PluginHook {
                             entity = packet.getEntityModifier(event).readSafely(0);
                         } catch (RuntimeException ignored) {
                         }
-                        if (entity == null) { 
+                        if (entity == null) {
                         	if(MyPetApi.getCompatUtil().compareWithMinecraftVersion("1.17") > 0) { //1.17+ does not like this.
                         		return;
                         	}
