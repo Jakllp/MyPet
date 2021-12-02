@@ -66,6 +66,8 @@ import net.minecraft.network.protocol.game.ClientboundLevelParticlesPacket;
 import net.minecraft.network.protocol.game.ClientboundSoundPacket;
 import net.minecraft.network.protocol.game.ClientboundTakeItemEntityPacket;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.dedicated.DedicatedPlayerList;
+import net.minecraft.server.dedicated.DedicatedServer;
 import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
@@ -394,16 +396,29 @@ public class PlatformHelper extends de.Keyle.MyPet.api.PlatformHelper {
     	LightningBolt lightning = new LightningBolt(EntityType.LIGHTNING_BOLT, world);
         lightning.setVisualOnly(true);
         lightning.moveTo(loc.getX(), loc.getY(), loc.getZ(), 0.0F, 0.0F);
-        world.getCraftServer()
-                .getServer()
-                .getPlayerList()
-                .broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
-                        new ClientboundAddEntityPacket(lightning));
-        world.getCraftServer()
-                .getServer()
-                .getPlayerList()
-                .broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
-                        new ClientboundSoundPacket(SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, loc.getX(), loc.getY(), loc.getZ(), distance, 1F));
+        /*world.getCraftServer()
+        .getServer()
+        .getPlayerList()
+        .broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
+                new ClientboundAddEntityPacket(lightning));
+		world.getCraftServer()
+		        .getServer()
+		        .getPlayerList()
+		        .broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
+		                new ClientboundSoundPacket(SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, loc.getX(), loc.getY(), loc.getZ(), distance, 1F));
+		*/
+		//Thank you wrong mappings for this workaround
+		DedicatedServer server = world.getCraftServer().getServer();
+		Method getPlayerListReflect = ReflectionUtil.getMethod(DedicatedServer.class,"getPlayerList");
+		try {
+		    DedicatedPlayerList playerList = (DedicatedPlayerList) getPlayerListReflect.invoke(server, null);
+		    playerList.broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
+		            new ClientboundAddEntityPacket(lightning));
+		    playerList.broadcast(null, loc.getX(), loc.getY(), loc.getZ(), distance, world.dimension(),
+		            new ClientboundSoundPacket(SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, loc.getX(), loc.getY(), loc.getZ(), distance, 1F));
+		} catch(Exception e) {
+		    e.printStackTrace();
+		}
     }
 
     @Override
